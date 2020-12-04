@@ -7,8 +7,16 @@
 
 import UIKit
 
-class MasterTableViewController: UITableViewController {
+class MasterTableViewController: UITableViewController, UISearchResultsUpdating {
+    private let searchController: UISearchController = UISearchController(searchResultsController: nil)
     var repositories: [Repository] = []
+    var searchQuery: String = ""
+    var isFilterActive : Bool {
+        return searchController.isActive && !isSearchBarEmpty
+    }
+    var isSearchBarEmpty: Bool {
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,7 +26,18 @@ class MasterTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
-        performSelector(inBackground: #selector(fetchJSON), with: nil)
+        title = "GitHub Repos"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        // Setting up UISearchController.
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Repositories"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+        refreshControl = UIRefreshControl()
+        refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+        
+        fetchJSON()
     }
 
     // MARK: - Table view data source
@@ -90,34 +109,75 @@ class MasterTableViewController: UITableViewController {
     // MARK: - Data fetching
     
     @objc func fetchJSON() {
-        if let data = try? String(contentsOf: URL(string: "https://api.github.com/search/repositories?q=apple&sort=stars&order=desc&per_page=15")!) {
-            // Give the data to SwiftyJSON to parse.
-            let jsonRepositories = JSON(parseJSON: data)
-            
-            // Read the commits back out.
-            let jsonRepositoriesArray = jsonRepositories["items"].arrayValue
-            
-            print("Received \(jsonRepositoriesArray.count) new repositories.")
-            
-            for jsonRepository in jsonRepositoriesArray {
-                var repository = Repository()
-                repository.name = jsonRepository["full_name"].stringValue
-                repository.url = jsonRepository["html_url"].stringValue
-                repository.description = jsonRepository["description"].stringValue
+        let url = GitHubAPI.BaseURL.appendingPathComponent("/search/repositories")
+        let query = URLQueryItem(name: "q", value: isFilterActive && !searchQuery.isEmpty ? searchQuery : "apple")
+        let sort = URLQueryItem(name: "sort", value: "stars")
+        let order = URLQueryItem(name: "order", value: "desc")
+        let quantity = URLQueryItem(name: "per_page", value: "30")
+        var componetns = URLComponents(string: url.absoluteString)!
+        componetns.queryItems = [query, sort, order, quantity]
+        print(componetns.url!)
+        DispatchQueue.global(qos: .userInitiated).async {
+            if let data = try? String(contentsOf: componetns.url!) {
+                // Give the data to SwiftyJSON to parse.
+                let jsonRepositories = JSON(parseJSON: data)
+                self.repositories.removeAll()
                 
-                repositories.append(repository)
+                // Parse and read the repositories back out.
+                self.parse(json: jsonRepositories)
+                return
             }
-            tableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: false)
-            return
+            
+            self.showError()
         }
-        
-        performSelector(onMainThread: #selector(showError), with: nil, waitUntilDone: false)
     }
     
     @objc func showError() {
-        let ac = UIAlertController(title: "Loading error", message: "There was a problem loading the feed; please check your connection and try again.", preferredStyle: .alert)
-        ac.addAction(UIAlertAction(title: "OK", style: .default))
-        present(ac, animated: true)
+        DispatchQueue.main.async {
+            let ac = UIAlertController(title: "Loading error", message: "There was a problem loading the feed; please check your connection and try again.", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            self.present(ac, animated: true)
+        }
+    }
+    
+    func parse(json: JSON) {
+        let jsonRepositoriesArray = json["items"].arrayValue
+        
+        print("Received \(jsonRepositoriesArray.count) new repositories.")
+        
+        for jsonRepository in jsonRepositoriesArray {
+            var repository = Repository()
+            repository.name = jsonRepository["full_name"].stringValue
+            repository.url = jsonRepository["html_url"].stringValue
+            repository.description = jsonRepository["description"].stringValue
+            
+            repositories.append(repository)
+        }
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+    // MARK: - UISearchResultsUpdating
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchBar = searchController.searchBar
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.searchQuery = searchBar.text!.lowercased()
+            self.fetchJSON()
+        }
+    }
+    
+    @objc func handleRefreshControl() {
+        // Update your content…
+        fetchJSON()
+        
+        // Dismiss the refresh control.
+        DispatchQueue.main.async {
+            self.refreshControl?.endRefreshing()
+        }
     }
 
 }
