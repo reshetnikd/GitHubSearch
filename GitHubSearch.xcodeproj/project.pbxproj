@@ -9,21 +9,27 @@
 /* Begin PBXBuildFile section */
 		3586D1C7257ACA6E000F08B6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3586D1C6257ACA6E000F08B6 /* AppDelegate.swift */; };
 		3586D1C9257ACA6E000F08B6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3586D1C8257ACA6E000F08B6 /* SceneDelegate.swift */; };
-		3586D1CB257ACA6E000F08B6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3586D1CA257ACA6E000F08B6 /* ViewController.swift */; };
 		3586D1CE257ACA6E000F08B6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3586D1CC257ACA6E000F08B6 /* Main.storyboard */; };
 		3586D1D0257ACA6F000F08B6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3586D1CF257ACA6F000F08B6 /* Assets.xcassets */; };
 		3586D1D3257ACA6F000F08B6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3586D1D1257ACA6F000F08B6 /* LaunchScreen.storyboard */; };
+		3586D1DD257ACAD7000F08B6 /* MasterTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3586D1DC257ACAD7000F08B6 /* MasterTableViewController.swift */; };
+		3586D1E1257ACBE3000F08B6 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3586D1E0257ACBE3000F08B6 /* DetailViewController.swift */; };
+		3586D1E4257ACC21000F08B6 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3586D1E3257ACC21000F08B6 /* Repository.swift */; };
+		3586D1E7257ACE2A000F08B6 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3586D1E6257ACE2A000F08B6 /* SwiftyJSON.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3586D1C3257ACA6E000F08B6 /* GitHubSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitHubSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3586D1C6257ACA6E000F08B6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3586D1C8257ACA6E000F08B6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		3586D1CA257ACA6E000F08B6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		3586D1CD257ACA6E000F08B6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3586D1CF257ACA6F000F08B6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3586D1D2257ACA6F000F08B6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3586D1D4257ACA6F000F08B6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3586D1DC257ACAD7000F08B6 /* MasterTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterTableViewController.swift; sourceTree = "<group>"; };
+		3586D1E0257ACBE3000F08B6 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		3586D1E3257ACC21000F08B6 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
+		3586D1E6257ACE2A000F08B6 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,10 +64,13 @@
 			children = (
 				3586D1C6257ACA6E000F08B6 /* AppDelegate.swift */,
 				3586D1C8257ACA6E000F08B6 /* SceneDelegate.swift */,
-				3586D1CA257ACA6E000F08B6 /* ViewController.swift */,
+				3586D1E6257ACE2A000F08B6 /* SwiftyJSON.swift */,
+				3586D1E3257ACC21000F08B6 /* Repository.swift */,
+				3586D1DC257ACAD7000F08B6 /* MasterTableViewController.swift */,
+				3586D1E0257ACBE3000F08B6 /* DetailViewController.swift */,
 				3586D1CC257ACA6E000F08B6 /* Main.storyboard */,
-				3586D1CF257ACA6F000F08B6 /* Assets.xcassets */,
 				3586D1D1257ACA6F000F08B6 /* LaunchScreen.storyboard */,
+				3586D1CF257ACA6F000F08B6 /* Assets.xcassets */,
 				3586D1D4257ACA6F000F08B6 /* Info.plist */,
 			);
 			path = GitHubSearch;
@@ -137,9 +146,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3586D1CB257ACA6E000F08B6 /* ViewController.swift in Sources */,
 				3586D1C7257ACA6E000F08B6 /* AppDelegate.swift in Sources */,
+				3586D1DD257ACAD7000F08B6 /* MasterTableViewController.swift in Sources */,
+				3586D1E4257ACC21000F08B6 /* Repository.swift in Sources */,
+				3586D1E7257ACE2A000F08B6 /* SwiftyJSON.swift in Sources */,
 				3586D1C9257ACA6E000F08B6 /* SceneDelegate.swift in Sources */,
+				3586D1E1257ACBE3000F08B6 /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -288,6 +300,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = GitHubSearch/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -295,7 +308,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = reshetnikd.GitHubSearch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -306,6 +319,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = GitHubSearch/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -313,7 +327,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = reshetnikd.GitHubSearch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
