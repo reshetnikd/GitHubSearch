@@ -6,13 +6,25 @@
 //
 
 import UIKit
+import WebKit
 
 class DetailViewController: UIViewController {
-
+    var webView: WKWebView!
+    var detailItem: Repository?
+    
+    override func loadView() {
+        webView = WKWebView()
+        view = webView
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        guard let detailItem = self.detailItem else { return }
+        
+        let request = URLRequest(url: URL(string: detailItem.url!)!)
+        webView.load(request)
     }
     
 

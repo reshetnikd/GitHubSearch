@@ -26,7 +26,7 @@ class MasterTableViewController: UITableViewController, UISearchResultsUpdating 
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
-        title = "GitHub Repos"
+        title = "GitHub"
         navigationController?.navigationBar.prefersLargeTitles = true
         // Setting up UISearchController.
         searchController.searchResultsUpdater = self
@@ -59,6 +59,13 @@ class MasterTableViewController: UITableViewController, UISearchResultsUpdating 
         cell.detailTextLabel!.text = repository.description
 
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let vc = storyboard?.instantiateViewController(withIdentifier: "Detail") as? DetailViewController {
+            vc.detailItem = repositories[indexPath.row]
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     /*
@@ -109,35 +116,42 @@ class MasterTableViewController: UITableViewController, UISearchResultsUpdating 
     // MARK: - Data fetching
     
     @objc func fetchJSON() {
-        let url = GitHubAPI.BaseURL.appendingPathComponent("/search/repositories")
-        let query = URLQueryItem(name: "q", value: isFilterActive && !searchQuery.isEmpty ? searchQuery : "apple")
-        let sort = URLQueryItem(name: "sort", value: "stars")
-        let order = URLQueryItem(name: "order", value: "desc")
-        let quantity = URLQueryItem(name: "per_page", value: "30")
-        var componetns = URLComponents(string: url.absoluteString)!
-        componetns.queryItems = [query, sort, order, quantity]
-        print(componetns.url!)
+        let downloadGroup = DispatchGroup()
+        let text = self.isFilterActive && !self.searchQuery.isEmpty ? self.searchQuery : "apple"
+        
         DispatchQueue.global(qos: .userInitiated).async {
-            if let data = try? String(contentsOf: componetns.url!) {
-                // Give the data to SwiftyJSON to parse.
-                let jsonRepositories = JSON(parseJSON: data)
-                self.repositories.removeAll()
-                
-                // Parse and read the repositories back out.
-                self.parse(json: jsonRepositories)
-                return
-            }
+            self.repositories.removeAll()
             
-            self.showError()
+            for pageNumber in 1...2 {
+                let url = GitHubAPI.BaseURL.appendingPathComponent("/search/repositories")
+                let query = URLQueryItem(name: "q", value: text)
+                let sort = URLQueryItem(name: "sort", value: "stars")
+                let order = URLQueryItem(name: "order", value: "desc")
+                let quantity = URLQueryItem(name: "per_page", value: "15")
+                let page = URLQueryItem(name: "page", value: String(pageNumber))
+                var componetns = URLComponents(string: url.absoluteString)!
+                componetns.queryItems = [query, sort, order, quantity, page]
+                downloadGroup.enter()
+                
+                if let data = try? String(contentsOf: componetns.url!) {
+                    // Give the data to SwiftyJSON to parse.
+                    let jsonRepositories = JSON(parseJSON: data)
+                    downloadGroup.leave()
+                    // Parse and read the repositories back out.
+                    self.parse(json: jsonRepositories)
+                } else {
+                    downloadGroup.notify(queue: DispatchQueue.main) {
+                        self.showError()
+                    }
+                }
+            }
         }
     }
     
     @objc func showError() {
-        DispatchQueue.main.async {
-            let ac = UIAlertController(title: "Loading error", message: "There was a problem loading the feed; please check your connection and try again.", preferredStyle: .alert)
-            ac.addAction(UIAlertAction(title: "OK", style: .default))
-            self.present(ac, animated: true)
-        }
+        let ac = UIAlertController(title: "Loading error", message: "There was a problem loading the feed; please check your connection and try again.", preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
     }
     
     func parse(json: JSON) {
@@ -163,17 +177,19 @@ class MasterTableViewController: UITableViewController, UISearchResultsUpdating 
     
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.searchQuery = searchBar.text!.lowercased()
-            self.fetchJSON()
+
+        if searchBar.text!.count >= 3 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.searchQuery = searchBar.text!.lowercased()
+                self.fetchJSON()
+            }
         }
     }
     
     @objc func handleRefreshControl() {
         // Update your content…
         fetchJSON()
-        
+
         // Dismiss the refresh control.
         DispatchQueue.main.async {
             self.refreshControl?.endRefreshing()
